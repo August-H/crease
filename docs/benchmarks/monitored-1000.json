@@ -1,0 +1,180 @@
+{
+  "timestamp_utc": "2026-10-26T17:17:05.341204+00:00",
+  "platform": "macOS-15.7.8-arm64-arm-64bit-Mach-O",
+  "processor": "arm64",
+  "go": "go version go1.26.4 darwin/arm64",
+  "git": "git version 2.54.0",
+  "files": 1000,
+  "history": 10,
+  "runs": 7,
+  "warmup_seconds": 1.1,
+  "crease_monitor": true,
+  "git_fsmonitor": true,
+  "scope": "local commands; global Git configuration disabled; warm OS caches; no network; monitor flags explicit",
+  "results": {
+    "crease": {
+      "track_ms": 10.23,
+      "initial_commit_ms": 55.478,
+      "monitor_start_ms": 57.951,
+      "status_first_ms": 23.477,
+      "status_warm": {
+        "median_ms": 8.094,
+        "max_ms": 24.891,
+        "samples_ms": [
+          24.891,
+          15.587,
+          12.65,
+          8.094,
+          7.708,
+          7.675,
+          7.197
+        ]
+      },
+      "diff_one_file": {
+        "median_ms": 8.159,
+        "max_ms": 8.512,
+        "samples_ms": [
+          7.896,
+          8.4,
+          8.23,
+          7.944,
+          7.998,
+          8.375,
+          8.089,
+          7.896,
+          8.512,
+          8.305
+        ]
+      },
+      "commit_one_file": {
+        "median_ms": 29.632,
+        "max_ms": 41.131,
+        "samples_ms": [
+          35.563,
+          29.455,
+          29.74,
+          28.816,
+          31.017,
+          29.524,
+          27.776,
+          41.131,
+          28.154,
+          30.628
+        ]
+      },
+      "commit_including_tracking": {
+        "median_ms": 29.632,
+        "max_ms": 41.131,
+        "samples_ms": [
+          35.563,
+          29.455,
+          29.74,
+          28.816,
+          31.017,
+          29.524,
+          27.776,
+          41.131,
+          28.154,
+          30.628
+        ]
+      },
+      "log_warm": {
+        "median_ms": 5.093,
+        "max_ms": 5.809,
+        "samples_ms": [
+          5.809,
+          5.11,
+          5.093,
+          4.754,
+          4.847,
+          4.796,
+          5.194
+        ]
+      },
+      "metadata_bytes": 1116006,
+      "commit_scope": "all tracked edits"
+    },
+    "git": {
+      "track_ms": 292.032,
+      "initial_commit_ms": 36.273,
+      "monitor_start_ms": 7.614,
+      "status_first_ms": 25.878,
+      "status_warm": {
+        "median_ms": 11.543,
+        "max_ms": 31.689,
+        "samples_ms": [
+          31.689,
+          26.061,
+          23.083,
+          11.315,
+          11.326,
+          11.528,
+          11.543
+        ]
+      },
+      "diff_one_file": {
+        "median_ms": 16.318,
+        "max_ms": 16.944,
+        "samples_ms": [
+          10.657,
+          15.714,
+          16.629,
+          15.528,
+          16.179,
+          16.944,
+          16.457,
+          16.8,
+          16.766,
+          15.841
+        ]
+      },
+      "commit_one_file": {
+        "median_ms": 19.898,
+        "max_ms": 20.796,
+        "samples_ms": [
+          20.796,
+          20.723,
+          19.858,
+          19.547,
+          19.204,
+          19.779,
+          20.432,
+          19.76,
+          20.259,
+          19.938
+        ]
+      },
+      "commit_including_tracking": {
+        "median_ms": 37.608,
+        "max_ms": 38.793,
+        "samples_ms": [
+          38.793,
+          38.357,
+          36.32,
+          36.939,
+          36.697,
+          38.097,
+          37.566,
+          37.576,
+          37.782,
+          37.641
+        ]
+      },
+      "log_warm": {
+        "median_ms": 4.403,
+        "max_ms": 5.011,
+        "samples_ms": [
+          5.011,
+          4.841,
+          4.403,
+          4.32,
+          4.244,
+          3.998,
+          4.482
+        ]
+      },
+      "metadata_bytes": 501093,
+      "commit_scope": "index already updated; staging time excluded"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+/bin/
+/.crease/
+*.test
+coverage.out
+__pycache__/
+/deploy/local/

@@ -1,0 +1,9 @@
+# Paths are resolved relative to the root compose.yaml.
+services:
+  crease:
+    volumes:
+      - type: bind
+        source: ${CREASE_DATA_DIR:?Set CREASE_DATA_DIR to a directory on your persistent disk}
+        target: /var/lib/crease
+        bind:
+          create_host_path: false

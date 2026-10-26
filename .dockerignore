@@ -1,0 +1,17 @@
+# Send only build inputs, never repository data or local SSH credentials.
+**
+!Dockerfile
+!go.mod
+!go.sum
+!cmd/
+!cmd/**/
+!cmd/**/*.go
+!internal/
+!internal/**/
+!internal/**/*.go
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
+**/.crease
+**/.git

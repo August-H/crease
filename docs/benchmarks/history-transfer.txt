@@ -1,0 +1,12 @@
+goos: darwin
+goarch: arm64
+pkg: crease/internal/syncer
+cpu: Apple M4
+BenchmarkHistoryTransfer/binary-10         	       1	  31780333 ns/op	     22626 binary-bytes/op	         3.000 rpc/op
+BenchmarkHistoryTransfer/binary-10         	       1	  29426416 ns/op	     22626 binary-bytes/op	         3.000 rpc/op
+BenchmarkHistoryTransfer/binary-10         	       1	  30708834 ns/op	     22626 binary-bytes/op	         3.000 rpc/op
+BenchmarkHistoryTransfer/legacy-json-10    	       1	 865721000 ns/op	        53.00 rpc/op
+BenchmarkHistoryTransfer/legacy-json-10    	       1	 915259750 ns/op	        53.00 rpc/op
+BenchmarkHistoryTransfer/legacy-json-10    	       1	 884878750 ns/op	        53.00 rpc/op
+PASS
+ok  	crease/internal/syncer	3.966s

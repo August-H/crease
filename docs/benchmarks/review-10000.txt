@@ -1,0 +1,7 @@
+goos: darwin
+goarch: arm64
+pkg: crease/internal/server
+cpu: Apple M4
+BenchmarkReviewList10000-10    	   19395	     68618 ns/op	   38024 B/op	     717 allocs/op
+PASS
+ok  	crease/internal/server	2.678s
