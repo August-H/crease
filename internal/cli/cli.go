@@ -511,6 +511,7 @@ func (a *app) backup(command string, args []string) error {
 }
 
 func (a *app) clone(command string, args []string) error {
+	cloneStarted := time.Now()
 	f := a.flags(command)
 	branch := f.String("branch", "main", "branch to check out")
 	f.StringVar(branch, "b", "main", "branch to check out")
@@ -518,9 +519,18 @@ func (a *app) clone(command string, args []string) error {
 	f.BoolVar(quiet, "quiet", false, "suppress clone messages")
 	paths := f.String("paths", "", "comma-separated selected paths")
 	full := f.Bool("full", false, "download historical file contents")
+	showTimings := f.Bool("timings", false, "write clone phase timings as JSON to stderr")
 	if e := parse(f, args); e != nil {
 		return e
 	}
+	var timings syncer.CloneTimings
+	defer func() {
+		if *showTimings {
+			timings.TotalMS = syncer.Milliseconds(cloneStarted)
+			b, _ := json.Marshal(timings)
+			fmt.Fprintf(a.err, "clone timings: %s\n", b)
+		}
+	}()
 	if f.NArg() < 1 || f.NArg() > 2 {
 		return fmt.Errorf("usage: crease %s URL [directory]", command)
 	}
@@ -556,7 +566,10 @@ func (a *app) clone(command string, args []string) error {
 	if command == "clone" && !*quiet {
 		fmt.Fprintf(a.out, "Cloning into '%s'...\n", quotePath(dir))
 	}
+	authStarted := time.Now()
 	c, e := transport.Dial(remote, a.opts)
+	authMS := syncer.Milliseconds(authStarted)
+	timings.AuthenticationMS = authMS
 	if e != nil {
 		return e
 	}
@@ -566,6 +579,7 @@ func (a *app) clone(command string, args []string) error {
 			return e
 		}
 	}
+	initStarted := time.Now()
 	w, e := workspace.Init(dir)
 	if e != nil {
 		return e
@@ -588,12 +602,11 @@ func (a *app) clone(command string, args []string) error {
 			return e
 		}
 	}
-	h, e := syncer.Fetch(c, w, *branch, *full)
+	initMS := syncer.Milliseconds(initStarted)
+	timings, e = syncer.Clone(c, w, *branch, *full)
+	timings.AuthenticationMS, timings.InitializeMS = authMS, initMS
 	if e != nil {
-		return fmt.Errorf("clone incomplete; local metadata is preserved for crease fetch: %w", e)
-	}
-	if e = w.Checkout(*branch, h, true, false, sparse); e != nil {
-		return e
+		return fmt.Errorf("clone incomplete; local metadata is preserved; use crease recover if an update is pending: %w", e)
 	}
 	if e = w.SetConfig("upstream:"+*branch, "origin/"+*branch); e != nil {
 		return e

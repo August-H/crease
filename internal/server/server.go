@@ -278,6 +278,12 @@ func (s *Server) rpc(conn net.Conn, ch ssh.Channel, identity string) {
 			}
 			return
 		}
+		if req.Op == "clone_stream" {
+			if e := s.cloneStream(conn, ch, identity, req); e != nil {
+				return
+			}
+			continue
+		}
 		if req.Op == "fetch_stream" || req.Op == "get_stream" || req.Op == "put_stream" {
 			if e := s.stream(conn, ch, identity, req); e != nil {
 				return

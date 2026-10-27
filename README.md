@@ -259,6 +259,10 @@ Objects are immutable and identified by SHA-256. New objects share durable binar
 
 Clients negotiate binary streaming and send a branch's history metadata in one request. Incremental synchronization stops at previously fetched history, and the server reuses its own persisted graph-validation results. An acknowledged branch update always follows durable object publication.
 
+New clients and servers combine clone metadata and current contents in one SSH application request. Fresh clones prepare files with up to eight workers while downloading continues, then sync completed files in a batch and sync each affected directory once before publishing the branch. Verified payloads are reused for checkout. `crease clone URL --timings` reports phase timings as JSON on stderr. Older servers use the existing fetch protocol with the batched checkout path; upgrade both endpoints to use the combined stream.
+
+The 1,000-file, 200-main-commit benchmark measured median clone time falling from 8.65 seconds to 456 ms with these changes. Git's full clone took 189 ms in the same rerun. These are warm-cache loopback measurements with different historical-content policies; see [the complete comparison](docs/benchmarks/clone-optimized-200.md).
+
 The server operator can read repository files, including committed secrets. SSH protects transport; storage is not automatically encrypted. Use encrypted storage and backups where needed. Removing access does not erase existing clones or old secrets from history.
 
 Stop the server before backing up:
@@ -291,8 +295,11 @@ go test -race -timeout 120s ./...
 go vet ./...
 go test ./internal/server -run '^$' -bench BenchmarkReviewList10000 -benchmem
 python3 scripts/benchmark.py --files 1000 --history 10 --runs 7
+make stress
 ```
 
 The integration suite opens SSH and monitor listeners on loopback. It tests two clients, lazy history, sparse commits, permissions, revocation, stale pushes, stale approvals, CI candidates, conflict resolution, corruption, concurrent updates, and backup restoration. Storage and transfer tests cover interrupted pack publication, bounded delta chains, legacy RPC fallback, history frontiers, and large-file deltas on push and pull. Local tests cover native monitor events and fallback, cache corruption, symlink replacement, incremental tree equivalence, commit diffs with inaccessible working files, and large text patches validated by Git when available.
 
 [docs/FORMAT.md](docs/FORMAT.md) specifies the wire and object formats. [docs/PERFORMANCE.md](docs/PERFORMANCE.md) describes the benchmark scope and results. [PLAN.md](PLAN.md) contains the original architecture and delivery plan.
+
+`make stress` compares Crease and Git using 200 main commits, 200 feature commits and 200 merges per tool, with four concurrent publishing clients. It creates, comments on, diffs, approves and merges 200 Crease pull requests, checks pagination, and verifies matching files, executable modes, histories, clones and persistent review records. Both tools use disposable SSH servers on loopback. Git has no built-in PR service, so its branch and merge timings are reported separately. The suite prints terminal latency histograms with summaries and percentiles, and writes raw samples and a Markdown report under `docs/benchmarks/`. Run `python3 scripts/stress.py --report docs/benchmarks/stress-200.json` to display charts from a saved run. See [the stress-test method](docs/PERFORMANCE.md#long-history-and-review-stress-suite) for options and comparison limits. It requires Go, Git, OpenSSH and Python 3.9 or later.

@@ -221,12 +221,24 @@ func Dial(raw string, opts Options) (*Client, error) {
 	return c, nil
 }
 func (c *Client) Receive(q protocol.Request, accept func([]byte) error) (protocol.Response, error) {
+	return c.ReceiveStart(q, nil, accept)
+}
+
+// ReceiveStart exposes the opening stream response before consuming records.
+// Clone uses it to bind metadata and current contents to one pinned head.
+func (c *Client) ReceiveStart(q protocol.Request, start func(protocol.Response) error, accept func([]byte) error) (protocol.Response, error) {
 	res, e := c.Call(q)
 	if e != nil {
 		return res, e
 	}
 	if !res.Stream {
 		return res, errors.New("server did not start a binary stream")
+	}
+	if start != nil {
+		if e = start(res); e != nil {
+			c.Close()
+			return res, e
+		}
 	}
 	for {
 		c.conn.SetDeadline(time.Now().Add(2 * time.Minute))

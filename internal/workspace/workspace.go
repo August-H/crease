@@ -960,6 +960,12 @@ func (w *Workspace) apply(j Journal, recovering bool) error {
 			return e
 		}
 	}
+	return w.finishCheckout(j)
+}
+
+// finishCheckout publishes metadata only after working files are durable. Both
+// ordinary journal replay and the fresh-clone batch writer use this boundary.
+func (w *Workspace) finishCheckout(j Journal) error {
 	tx, e := w.DB.Begin()
 	if e != nil {
 		return e

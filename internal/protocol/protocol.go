@@ -82,6 +82,7 @@ type Response struct {
 	Version      int                     `json:"version"`
 	Error        string                  `json:"error,omitempty"`
 	Refs         map[string]string       `json:"refs,omitempty"`
+	Head         string                  `json:"head,omitempty"`
 	Default      string                  `json:"default,omitempty"`
 	IDs          []string                `json:"ids,omitempty"`
 	Objects      map[string]model.Object `json:"objects,omitempty"`

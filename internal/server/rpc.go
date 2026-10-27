@@ -83,7 +83,7 @@ func (s *Server) Handle(actor string, q protocol.Request) (protocol.Response, er
 		return out, errors.New("request exceeds limits")
 	}
 	if q.Op == "capabilities" {
-		out.Capabilities = []string{"binary-stream-v1", "history-frontiers-v1", "graph-proofs-v1"}
+		out.Capabilities = []string{"binary-stream-v1", "history-frontiers-v1", "graph-proofs-v1", "clone-stream-v1"}
 		return out, nil
 	}
 	if q.Op == "create" {

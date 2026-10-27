@@ -46,6 +46,7 @@ Long status groups tracked changes under `Changes to be committed` and explains 
 | `crease remote remove origin` | Remove the address, tracking settings, and cached remote references. |
 | `crease push -u origin main` | Push the current branch and record its upstream. |
 | `crease fetch origin main` | Fetch metadata and selected files without changing working files. |
+| `crease clone URL [directory] --timings` | Clone normally and emit JSON phase timings on stderr. |
 | `crease pull --ff-only origin main` | Fetch and fast-forward the current branch. |
 | `crease merge origin/feature` | Merge a published branch. |
 | `crease config user.name "Your Name"` | Set the repository-local author name. |
@@ -69,6 +70,10 @@ Long status groups tracked changes under `Changes to be committed` and explains 
 The same public-key input forms work with `access revoke`. `access list` shows granted roles and key fingerprints. When no role is supplied, grants default to `read`. Explicit `--key`, then `CREASE_KEY`, take precedence over the identity saved by `key use` or `key init`. Encrypted private keys use the matching identity loaded in `ssh-agent`. `key init` generates an unencrypted private key protected by filesystem permissions; use `ssh-keygen` and `key use` when you want to generate a passphrase-protected key.
 
 `create URL .` is a Crease extension for creating a server repository and connecting the current initialized workspace. Creating a remote does not upload commits; use `push` afterward.
+
+Fresh clones negotiate `clone-stream-v1` when both peers support it. One application request retrieves a pinned branch's metadata and selected current contents. Up to eight workers prepare files while contents arrive, with a 64 MiB budget for queued and active checkout payloads. Completed files are synced in a batch before publication, and affected directories are synced once each. The repository's existing durable journal protects interrupted publication. Older peers use the existing fetch protocol and the same batched fresh-workspace checkout. `--full` includes historical blobs; `--paths` selects current working files.
+
+`--timings` is opt-in and works with `--quiet`. It prints a `clone timings: ` prefix followed by one JSON object on stderr, leaving stdout unchanged. Fields include authentication, workspace initialization, metadata reception, preparation, file reception, checkout wait, file synchronization, publication, staging cleanup and total wall time, plus the negotiated mode, application request count, encoded record bytes, worker count and peak checkout payload bytes. File reception overlaps checkout work, so these durations are not additive. Payload accounting excludes object-store buffers and graph metadata. Authentication includes capability discovery; the request counter covers the clone itself.
 
 ## Output examples
 

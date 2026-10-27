@@ -335,17 +335,28 @@ func DurableMkdirAll(dir string) error {
 	return nil
 }
 func (s Store) Import(record []byte) (string, error) {
+	_, e := s.ImportObject(record)
+	if e != nil {
+		return "", e
+	}
+	id, _, _, e := codec.Inspect(record)
+	return id, e
+}
+
+// ImportObject returns the already verified payload so a streaming checkout can
+// consume it without reading and decoding the newly stored record again.
+func (s Store) ImportObject(record []byte) (model.Object, error) {
 	if s.state == nil {
 		temp := New(s.Dir)
-		id, e := temp.Import(record)
+		o, e := temp.ImportObject(record)
 		if e == nil {
 			e = temp.Flush()
 		}
-		return id, e
+		return o, e
 	}
 	o, e := codec.Decode(record, s.Get)
 	if e != nil {
-		return "", e
+		return model.Object{}, e
 	}
 	_, _, base, _ := codec.Inspect(record)
 	if base != "" {
@@ -355,11 +366,12 @@ func (s Store) Import(record []byte) (string, error) {
 		if depth >= codec.MaxDepth {
 			record, e = codec.Encode(o, nil)
 			if e != nil {
-				return "", e
+				return model.Object{}, e
 			}
 		}
 	}
-	return s.putEncoded(o, record)
+	_, e = s.putEncoded(o, record)
+	return o, e
 }
 func (s Store) Export(id, baseID string) ([]byte, error) {
 	o, e := s.Get(id)
