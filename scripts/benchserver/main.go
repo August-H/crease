@@ -180,6 +180,7 @@ func gitSession(ctx context.Context, channel ssh.Channel, requests <-chan *ssh.R
 		}
 		cmd := exec.CommandContext(ctx, command, repo)
 		cmd.Env = append(os.Environ(), "GIT_PROTOCOL="+protocol)
+		cmd.Stdout, cmd.Stderr = channel, channel.Stderr()
 		input, err := cmd.StdinPipe()
 		if err != nil || cmd.Start() != nil {
 			if input != nil {
